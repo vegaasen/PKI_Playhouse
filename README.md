@@ -19,10 +19,10 @@ My very own "PKI" Playhouse. Just a testing-ground for encipher-stuff, encoding,
 
 This is how you would typically generate a AESKey with the default Keytool-command-line thingie provided by Sun/Oracle..
 
-keytool -genseckey -alias my-secret -keyalg AES -keysize 192 -storetype JCEKS -keystore fun.jceks
-keytool -list -keystore fun.jceks -storetype JCEKS
+* keytool -genseckey -alias my-secret -keyalg AES -keysize 192 -storetype JCEKS -keystore fun.jceks
+* keytool -list -keystore fun.jceks -storetype JCEKS
 
-List results in:
+When listing the contents of the keystore, it would result in similar to this:
 
     vegaasen@vegaasen-ppc1:~/_develop/java/PKI_Playhouse/src/main/resources$ keytool -list -storetype jceks -keystore fun.jceks
     Enter keystore password:
