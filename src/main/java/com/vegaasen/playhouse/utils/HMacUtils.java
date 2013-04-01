@@ -34,6 +34,17 @@ public final class HMacUtils {
     private HMacUtils() {
     }
 
+    /**
+     * This will generate a Map (hence the Container-name) that contains three elements.
+     * These are:
+     *  -digested value
+     *  -signature value
+     *  -algorithm used (e.g sha-1)
+     *
+     * @param aesKey They key to sign with
+     * @param message The message to generate hmac for
+     * @return container with lots of stuff
+     */
     public static Map<String, String> generateIntegrityContainer(final Key aesKey, final String message) {
         configureSecurity();
         if (aesKey != null) {
