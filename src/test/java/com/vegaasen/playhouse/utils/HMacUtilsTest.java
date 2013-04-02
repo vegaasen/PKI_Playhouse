@@ -1,6 +1,6 @@
 package com.vegaasen.playhouse.utils;
 
-import com.vegaasen.playhouse.types.Algorithm;
+import com.vegaasen.playhouse.types.HashType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class HMacUtilsTest {
 
     @Before
     public void setUp() {
-        HMacUtils.setAlgorithm(HMacUtils.DEFAULT_ALGORITHM);
+        HMacUtils.setHashType(HMacUtils.DEFAULT_HASH_TYPE);
         KeyStoreUtils.setKeystoreType("JCEKS");
         validVerificationKey = getAESKeyFromLocalKeyStore("my-secret", "vegard");
         invalidVerificationKey = getAESKeyFromLocalKeyStore("my-second-secret", "vegard");
@@ -36,12 +36,12 @@ public class HMacUtilsTest {
 
     @Test
     public void testSetAlgorithm() {
-        HMacUtils.setAlgorithm(Algorithm.HMAC_MD5);
-        assertEquals(HMacUtils.getAlgorithm(), Algorithm.HMAC_MD5);
-        HMacUtils.setAlgorithm(Algorithm.HMAC_SHA_1);
-        assertEquals(HMacUtils.getAlgorithm(), Algorithm.HMAC_SHA_1);
-        HMacUtils.setAlgorithm(HMacUtils.DEFAULT_ALGORITHM);
-        assertEquals(HMacUtils.getAlgorithm(), HMacUtils.DEFAULT_ALGORITHM);
+        HMacUtils.setHashType(HashType.HMAC_MD_5);
+        assertEquals(HMacUtils.getHashType(), HashType.HMAC_MD_5);
+        HMacUtils.setHashType(HashType.HMAC_SHA_1);
+        assertEquals(HMacUtils.getHashType(), HashType.HMAC_SHA_1);
+        HMacUtils.setHashType(HMacUtils.DEFAULT_HASH_TYPE);
+        assertEquals(HMacUtils.getHashType(), HMacUtils.DEFAULT_HASH_TYPE);
     }
 
     @Test
@@ -145,13 +145,13 @@ public class HMacUtilsTest {
     @Test
     public void shouldGenerateHMacString_fromAesUtilsGeneratedKey()
             throws NoSuchProviderException, NoSuchAlgorithmException {
-        final Key aesKey = AesUtils.generateAESKey(AesUtils.AES_KEY_SIZE_192);
+        final Key aesKey = KeyUtils.generateAESKey(KeyUtils.AES_KEY_SIZE_192);
         assertNotNull(aesKey);
         assertNotNull(aesKey.getEncoded());
         assertTrue(aesKey.getEncoded().length > 0);
-        final Map<String, String> result =  HMacUtils.generateIntegrityContainer(aesKey, MESSAGE);
+        final Map<String, String> result = HMacUtils.generateIntegrityContainer(aesKey, MESSAGE);
         assertNotNull(result);
-        assertTrue(result.size()==3);
+        assertTrue(result.size() == 3);
         final boolean expectedResult = true;
         final boolean verificationResult = HMacUtils.verifyIntegrity(
                 aesKey,
@@ -167,13 +167,13 @@ public class HMacUtilsTest {
     public void shouldGenerateHMacString_fromPortableFormatFromAesUtilsGeneratedKey()
             throws Exception {
         final String portableFormat = "5I3efrQWPlpv9IUegrHcq+QEfmqEP2p+";
-        final Key aesKey = AesUtils.convertFromPortableToAESKey(portableFormat);
+        final Key aesKey = KeyUtils.convertFromPortableToKey(portableFormat, HashType.AES);
         assertNotNull(aesKey);
         assertNotNull(aesKey.getEncoded());
         assertTrue(aesKey.getEncoded().length > 0);
-        final Map<String, String> result =  HMacUtils.generateIntegrityContainer(aesKey, MESSAGE);
+        final Map<String, String> result = HMacUtils.generateIntegrityContainer(aesKey, MESSAGE);
         assertNotNull(result);
-        assertTrue(result.size()==3);
+        assertTrue(result.size() == 3);
         final boolean expectedResult = true;
         final boolean verificationResult = HMacUtils.verifyIntegrity(
                 aesKey,
@@ -185,6 +185,41 @@ public class HMacUtilsTest {
         assertEquals(expectedResult, verificationResult);
     }
 
+    @Test
+    public void shouldGenerateHMacString_fromPortableFormatFromAesUtilsGeneratedKey_from_xml_signing_utils()
+            throws Exception {
+        final String portableFormat = "ea2d84110583e3a80070ea76446425d6";
+        final Key aesKey = KeyUtils.convertFromPortableToKey(portableFormat, HashType.AES);
+        assertNotNull(aesKey);
+        assertNotNull(aesKey.getEncoded());
+        assertTrue(aesKey.getEncoded().length > 0);
+        final Map<String, String> result = HMacUtils.generateIntegrityContainer(aesKey, MESSAGE);
+        assertNotNull(result);
+        assertTrue(result.size() == 3);
+        final boolean expectedResult = true;
+        final boolean verificationResult = HMacUtils.verifyIntegrity(
+                aesKey,
+                result.get(HMacUtils.KEY_SIGNATURE_VALUE),
+                result.get(HMacUtils.KEY_DIGEST_VALUE),
+                MESSAGE
+        );
+        assertNotNull(verificationResult);
+        assertEquals(expectedResult, verificationResult);
+    }
+
+    @Test
+    public void shouldGenerateSomeHmacKeyFromTheAESValidVerificationKey() throws Exception {
+        final String expectedBase64Hmac = "fcTTs5MqglRj4b0b7hRKtGTyoSVJhCN3";
+        final Key hmacKey = HMacUtils.getHMacKey(validVerificationKey, HashType.HMAC_SHA_1);
+        assertNotNull(hmacKey);
+        assertNotNull(hmacKey.getEncoded());
+        assertTrue(hmacKey.getEncoded().length > 0);
+        final String result = KeyUtils.convertKeyToPortableFormat(hmacKey);
+        assertNotNull(result);
+        assertTrue(!result.isEmpty());
+        assertEquals(expectedBase64Hmac, result);
+    }
+
     private static Key getAESKeyFromLocalKeyStore(String alias, String password) {
         final KeyStore keyStore = KeyStoreUtils.load("fun.jceks", "vegard");
         return KeyStoreUtils.getKey(keyStore, alias, password);
@@ -192,7 +227,7 @@ public class HMacUtilsTest {
 
     @After
     public void tearDown() {
-        HMacUtils.setAlgorithm(HMacUtils.DEFAULT_ALGORITHM);
+        HMacUtils.setHashType(HMacUtils.DEFAULT_HASH_TYPE);
     }
 
 }

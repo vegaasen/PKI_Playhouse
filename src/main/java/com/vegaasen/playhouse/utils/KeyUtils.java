@@ -1,6 +1,7 @@
 package com.vegaasen.playhouse.utils;
 
 import com.google.common.io.BaseEncoding;
+import com.vegaasen.playhouse.types.HashType;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -13,19 +14,19 @@ import java.security.SecureRandom;
 /**
  * @author <a href="mailto:vegaasen@gmail.com">Vegard Aasen</a>
  */
-public final class AesUtils {
+public final class KeyUtils {
 
     public static final int
             AES_KEY_SIZE_128 = 128,
             AES_KEY_SIZE_192 = 192,
             AES_KEY_SIZE_256 = 256;
 
-    private AesUtils() {
+    private KeyUtils() {
     }
 
     public static SecretKey generateAESKey(final int bitLength)
             throws NoSuchAlgorithmException, NoSuchProviderException {
-        final KeyGenerator generator = KeyGenerator.getInstance("AES", "SunJCE");
+        final KeyGenerator generator = KeyGenerator.getInstance(HashType.AES.getType(), "SunJCE");
         generator.init(bitLength, new SecureRandom());
         return generator.generateKey();
     }
@@ -37,7 +38,7 @@ public final class AesUtils {
      * @return base64-representation of the key
      * @throws Exception
      */
-    public static String convertAESKeyToPortableFormat(final Key key) throws Exception {
+    public static String convertKeyToPortableFormat(final Key key) throws Exception {
         if (key != null) {
             final String based = BaseEncoding.base64().encode(key.getEncoded());
             if (based != null && !based.isEmpty()) {
@@ -59,18 +60,18 @@ public final class AesUtils {
         throw new IllegalArgumentException("Argument (PortableString) cannot be null.");
     }
 
-    public static Key convertFromPortableToAESKey(final String portableString) throws Exception {
+    public static Key convertFromPortableToKey(final String portableString, final HashType hashType) throws Exception {
         final byte[] converted = convertFromPortableFormatToByteArray(portableString);
-        return convertFromByteArrayToAESKey(converted);
+        return convertFromByteArrayToKey(hashType, converted);
     }
 
-    public static Key convertFromByteArrayToAESKey(final byte... converted) throws Exception {
+    public static Key convertFromByteArrayToKey( final HashType hashType, final byte... converted) throws Exception {
         if (converted != null && converted.length > 0) {
-            final Key key = new SecretKeySpec(converted, 0, converted.length, "AES");
+            final Key key = new SecretKeySpec(converted, 0, converted.length, hashType.getType());
             if (key.getEncoded() != null) {
                 return key;
             }
-            throw new Exception("Unable to convert to AESKey.");
+            throw new Exception("Unable to convert to Key.");
         }
         throw new IllegalArgumentException("Argument (Converted) cannot be null.");
     }
@@ -81,7 +82,7 @@ public final class AesUtils {
         if (key.getEncoded() != null) {
             return key;
         }
-        throw new Exception("Unable to convert to AESKey.");
+        throw new Exception("Unable to convert to Key.");
     }
 
 }

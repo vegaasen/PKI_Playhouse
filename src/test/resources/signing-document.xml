@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<cars id="allTheCarsInTheWorld">
+    <make>
+        <car>
+            <type>Volkswagen</type>
+            <models>
+                <model createdDate="10pm March 10, 2002">
+                    <name>Golf</name>
+                    <version>4</version>
+                </model>
+                <model createdDate="12pm March 10, 2003">
+                    <name>Polo</name>
+                    <version>4</version>
+                </model>
+            </models>
+        </car>
+    </make>
+</cars>

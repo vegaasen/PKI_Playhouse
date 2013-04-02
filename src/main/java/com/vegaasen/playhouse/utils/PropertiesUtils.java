@@ -10,8 +10,10 @@ import java.util.Properties;
  */
 public final class PropertiesUtils {
 
+    private static final String SEPARATOR = "/";
+
     private static PropertiesUtils propertiesUtils;
-    private static String propertiesFileName = File.separator + "application.properties";
+    private static String propertiesFileName = SEPARATOR + "application.properties";
     private static Properties properties;
 
     private PropertiesUtils() {

@@ -2,7 +2,7 @@ package com.vegaasen.playhouse.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
-import com.vegaasen.playhouse.types.Algorithm;
+import com.vegaasen.playhouse.types.HashType;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.*;
@@ -23,12 +23,12 @@ public final class HMacUtils {
     public static final String KEY_SIGNATURE_VALUE = "key_signValueHmac";
     public static final String KEY_DIGEST_VALUE = "key_digestedValue";
     public static final String KEY_ALGORITHM_USED = "key_algorithmUsed";
-    public static final Algorithm DEFAULT_ALGORITHM = Algorithm.HMAC_SHA_1;
+    public static final HashType DEFAULT_HASH_TYPE = HashType.HMAC_SHA_1;
 
     private static final String PSEUDO_RANDOM_IVSPEC = "1234567812345678";
     private static final String BOUNCY_CASTLE_PROVIDER_ABBR = "BC";
 
-    private static Algorithm algorithm = DEFAULT_ALGORITHM;
+    private static HashType hashType = DEFAULT_HASH_TYPE;
     private static Cipher cipher = null;
 
     private HMacUtils() {
@@ -39,7 +39,7 @@ public final class HMacUtils {
      * These are:
      *  -digested value
      *  -signature value
-     *  -algorithm used (e.g sha-1)
+     *  -hashType used (e.g sha-1)
      *
      * @param aesKey They key to sign with
      * @param message The message to generate hmac for
@@ -50,8 +50,8 @@ public final class HMacUtils {
         if (aesKey != null) {
             final IvParameterSpec spec = createCtrIvForAES();
             try {
-                final Mac hMac = Mac.getInstance(algorithm.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
-                final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), algorithm.getType());
+                final Mac hMac = Mac.getInstance(hashType.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
+                final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), hashType.getType());
 
                 cipher.init(Cipher.ENCRYPT_MODE, aesKey, spec);
                 byte[] encryptedCipherValue = new byte[cipher.getOutputSize(message.length() + hMac.getMacLength())];
@@ -69,7 +69,7 @@ public final class HMacUtils {
                     Map<String, String> converted = new LinkedHashMap<>();
                     converted.put(KEY_SIGNATURE_VALUE, BaseEncoding.base64().encode(hMac.doFinal()));
                     converted.put(KEY_DIGEST_VALUE, BaseEncoding.base64().encode(encryptedCipherValue));
-                    converted.put(KEY_ALGORITHM_USED, algorithm.getType());
+                    converted.put(KEY_ALGORITHM_USED, hashType.getType());
                     return converted;
                 }
             } catch (NoSuchAlgorithmException |
@@ -121,8 +121,8 @@ public final class HMacUtils {
             configureSecurity();
             final IvParameterSpec spec = createCtrIvForAES();
             try {
-                final Mac hMac = Mac.getInstance(algorithm.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
-                final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), algorithm.getType());
+                final Mac hMac = Mac.getInstance(hashType.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
+                final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), hashType.getType());
                 cipher.init(Cipher.DECRYPT_MODE, aesKey, spec);
                 final byte[] decodedCipherValue = BaseEncoding.base64().decode(digestValue);
                 byte[] plainText = cipher.doFinal(decodedCipherValue, 0, decodedCipherValue.length);
@@ -170,6 +170,35 @@ public final class HMacUtils {
         return verifyIntegrity(getLocalKeyStoreSecretKey(), signatureValue, digestValue, message);
     }
 
+
+    /**
+     * Returns a HMac-key based on some existing key (may it be AES, Triple-DES or similar)
+     *
+     * @param key the key
+     * @param hashType HashType
+     * @return HMac-Key
+     */
+    public static Key getHMacKey(final Key key, final HashType hashType) {
+        if(key!=null) {
+            return getHMacKey(key.getEncoded(), hashType);
+        }
+        throw new IllegalArgumentException("Argument cannot be null or empty.");
+    }
+
+    /**
+     * Returns a HMac-key based on some existing keyData (may it be AES, Triple-DES or similar)
+     *
+     * @param keyData byte stream containing the key
+     * @param hashType HashType
+     * @return HMac-Key
+     */
+    public static Key getHMacKey(final byte[] keyData, final HashType hashType) {
+        if(keyData!=null && keyData.length>0) {
+            return new SecretKeySpec(keyData, hashType.getType());
+        }
+        throw new IllegalArgumentException("Argument cannot be null or empty.");
+    }
+
     private static Key getLocalKeyStoreSecretKey() {
         KeyStoreUtils.setKeystoreType(
                 PropertiesUtils.getInstance().getProperty("keystore.type")
@@ -204,12 +233,12 @@ public final class HMacUtils {
         }
     }
 
-    public static void setAlgorithm(Algorithm alg) {
-        algorithm = alg;
+    public static void setHashType(HashType alg) {
+        hashType = alg;
     }
 
-    public static Algorithm getAlgorithm() {
-        return algorithm;
+    public static HashType getHashType() {
+        return hashType;
     }
 
 }

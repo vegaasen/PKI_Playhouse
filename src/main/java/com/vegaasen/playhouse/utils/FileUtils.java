@@ -8,6 +8,8 @@ import java.net.URL;
  */
 public final class FileUtils {
 
+    private static final String SEPARATOR = "/";
+
     private static FileUtils fileUtils;
 
     private FileUtils() {
@@ -22,7 +24,7 @@ public final class FileUtils {
 
     public File getFileFromClassPath(String fileName) {
         if (fileName != null && !fileName.isEmpty()) {
-            final URL resource = this.getClass().getResource(File.separator + fileName);
+            final URL resource = this.getClass().getResource(SEPARATOR + fileName);
             if (resource != null) {
                 return new File(resource.getFile());
             }
