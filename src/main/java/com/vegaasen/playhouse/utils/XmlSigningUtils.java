@@ -38,7 +38,6 @@ public final class XmlSigningUtils {
 
     public static final String DEFAULT_SIGNATURE_ID = "coolSignature";
 
-    private static XMLSignatureFactory xmlSignatureFactory;
     private static final String NAMESPACE_PREFIX = "ds";
     private static final String NODE_SIGNATURE = "Signature";
 
@@ -145,7 +144,7 @@ public final class XmlSigningUtils {
             final Document document,
             final X509Certificate validatingCertificate) throws CertificateException, SignatureException {
         if (verifyCertificateValidity(validatingCertificate)) {
-            validateDocumentByKey(document, validatingCertificate.getPublicKey());
+            return validateDocumentByKey(document, validatingCertificate.getPublicKey());
         }
         return false;
     }
@@ -230,11 +229,7 @@ public final class XmlSigningUtils {
     }
 
     private static synchronized XMLSignatureFactory getXMLSignatureFactory() {
-        if (xmlSignatureFactory != null) {
-            return xmlSignatureFactory;
-        }
-        xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
-        return xmlSignatureFactory;
+        return XMLSignatureFactory.getInstance("DOM");
     }
 
 }

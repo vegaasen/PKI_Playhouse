@@ -1,6 +1,10 @@
 package com.vegaasen.playhouse.utils;
 
+import com.google.common.base.Strings;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -22,8 +26,18 @@ public final class FileUtils {
         return fileUtils;
     }
 
+    public InputStream getFileAsInputStreamFromClassPath(String fileName) {
+        if(!Strings.isNullOrEmpty(fileName)) {
+            final InputStream is = this.getClass().getResourceAsStream(SEPARATOR + fileName);
+            if(is!=null) {
+                return is;
+            }
+        }
+        return null;
+    }
+
     public File getFileFromClassPath(String fileName) {
-        if (fileName != null && !fileName.isEmpty()) {
+        if (!Strings.isNullOrEmpty(fileName)) {
             final URL resource = this.getClass().getResource(SEPARATOR + fileName);
             if (resource != null) {
                 return new File(resource.getFile());
@@ -33,7 +47,7 @@ public final class FileUtils {
     }
 
     public File getFileFromFileSystem(String pathAndFileName) {
-        if (pathAndFileName != null && !pathAndFileName.isEmpty()) {
+        if (!Strings.isNullOrEmpty(pathAndFileName)) {
             return new File(pathAndFileName);
         }
         return null;

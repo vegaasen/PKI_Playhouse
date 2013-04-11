@@ -15,7 +15,12 @@ public class FileUtilsTest {
 
     @Test
     public void shouldFindHostFile() {
-        final File hostFile = FileUtils.getInstance().getFileFromFileSystem("/etc/hosts");
+        File hostFile;
+        if(isWindows()) {
+            hostFile = FileUtils.getInstance().getFileFromFileSystem("C:\\Windows\\System32\\drivers\\etc\\hosts");
+        }else{
+            hostFile = FileUtils.getInstance().getFileFromFileSystem("/etc/hosts");
+        }
         assertNotNull(hostFile);
         assertTrue(hostFile.exists());
     }
@@ -50,6 +55,10 @@ public class FileUtilsTest {
     public void shouldReturnNullIfMissingFileName() {
         final File result = FileUtils.getInstance().getFileFromClassPath("");
         assertNull(result);
+    }
+
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
 }

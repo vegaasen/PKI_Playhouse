@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                ID="AEA1247AD133724C7566E777C47316CF7220D0B94"
+                IssueInstant="2013-02-19T09:07:31Z"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema"
+                Version="2.0">
+    <saml:Issuer>http://getaccess.telenor.no/</saml:Issuer>
+    <saml:Subject>
+        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+                     NameQualifier="http://getaccess.telenor.no/" SPNameQualifier="http://tna-01-3908.corp.telenor.no">
+            fefe3947aa2cd9e61b5216dcc82bf2acef74e91c
+        </saml:NameID>
+        <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+            <saml:SubjectConfirmationData InResponseTo="S8oAh7XP9NCOjiDsu1DxLaNEy32J2G4U"
+                                          NotOnOrAfter="2013-02-19T09:09:01Z"
+                                          Recipient="http://tna-01-3908.corp.telenor.no:8080/handler/saml/sso/post"/>
+        </saml:SubjectConfirmation>
+    </saml:Subject>
+    <saml:Conditions NotBefore="2013-02-19T09:07:01Z" NotOnOrAfter="2013-02-19T09:09:01Z">
+        <saml:AudienceRestriction>
+            <saml:Audience>http://host1.telenor.no</saml:Audience>
+            <saml:Audience>http://host2.telenor.no</saml:Audience>
+            <saml:Audience>http://host3.telenor.no</saml:Audience>
+            <saml:Audience>http://host4.telenor.no</saml:Audience>
+        </saml:AudienceRestriction>
+        <saml:OneTimeUse/>
+    </saml:Conditions>
+    <saml:AuthnStatement AuthnInstant="2013-02-19T09:07:30Z" SessionIndex="AEA1247AD133724C7566E777C47316CF7220D0B94"
+                         SessionNotOnOrAfter="2013-02-19T17:08:00Z">
+        <saml:AuthnContext>
+            <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+        </saml:AuthnContext>
+    </saml:AuthnStatement>
+    <saml:AttributeStatement>
+        <saml:Attribute Name="epost" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+            <saml:AttributeValue xsi:nil="true" xsi:type="xs:string"/>
+        </saml:Attribute>
+    </saml:AttributeStatement>
+</saml:Assertion>

@@ -3,7 +3,6 @@ package com.vegaasen.playhouse.utils;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 import com.vegaasen.playhouse.types.HashType;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -26,7 +25,7 @@ public final class HMacUtils {
     public static final HashType DEFAULT_HASH_TYPE = HashType.HMAC_SHA_1;
 
     private static final String PSEUDO_RANDOM_IVSPEC = "1234567812345678";
-    private static final String BOUNCY_CASTLE_PROVIDER_ABBR = "BC";
+    private static final String SUN_JCE_PROVIDER_ABBR = "SunJCE";
 
     private static HashType hashType = DEFAULT_HASH_TYPE;
     private static Cipher cipher = null;
@@ -50,7 +49,7 @@ public final class HMacUtils {
         if (aesKey != null) {
             final IvParameterSpec spec = createCtrIvForAES();
             try {
-                final Mac hMac = Mac.getInstance(hashType.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
+                final Mac hMac = Mac.getInstance(hashType.getType(), SUN_JCE_PROVIDER_ABBR);
                 final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), hashType.getType());
 
                 cipher.init(Cipher.ENCRYPT_MODE, aesKey, spec);
@@ -121,7 +120,7 @@ public final class HMacUtils {
             configureSecurity();
             final IvParameterSpec spec = createCtrIvForAES();
             try {
-                final Mac hMac = Mac.getInstance(hashType.getType(), BOUNCY_CASTLE_PROVIDER_ABBR);
+                final Mac hMac = Mac.getInstance(hashType.getType(), SUN_JCE_PROVIDER_ABBR);
                 final Key hMacKey = new SecretKeySpec(aesKey.getEncoded(), hashType.getType());
                 cipher.init(Cipher.DECRYPT_MODE, aesKey, spec);
                 final byte[] decodedCipherValue = BaseEncoding.base64().decode(digestValue);
@@ -205,12 +204,18 @@ public final class HMacUtils {
         );
         KeyStore funJceks = KeyStoreUtils.load(
                 PropertiesUtils.getInstance().getProperty("keystore.name"),
-                PropertiesUtils.getInstance().getProperty("keystore.password"));
-        return KeyStoreUtils.getKey(
-                funJceks,
-                PropertiesUtils.getInstance().getProperty("keystore.entry.secret.name"),
-                PropertiesUtils.getInstance().getProperty("keystore.entry.secret.password")
-        );
+                PropertiesUtils.getInstance().getProperty("keystore.password"),
+                false);
+        try {
+            return KeyStoreUtils.getKey(
+                    funJceks,
+                    PropertiesUtils.getInstance().getProperty("keystore.entry.secret.name"),
+                    PropertiesUtils.getInstance().getProperty("keystore.entry.secret.password")
+            );
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static IvParameterSpec createCtrIvForAES() {
@@ -218,19 +223,15 @@ public final class HMacUtils {
     }
 
     private static void configureSecurity() {
-        if (Security.getProvider(BOUNCY_CASTLE_PROVIDER_ABBR) == null) {
-            Security.addProvider(new BouncyCastleProvider());
+        if(cipher==null) {
             try {
                 //AES/CTS/PKCS5Padding?
-                cipher = Cipher.getInstance("AES/CTR/NoPadding", BOUNCY_CASTLE_PROVIDER_ABBR);
+                cipher = Cipher.getInstance("AES/CTR/NoPadding", SUN_JCE_PROVIDER_ABBR);
             } catch (NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException e) {
                 e.printStackTrace();
             }
-            if (cipher == null) throw new IllegalStateException("Cipher has not been initialised!");
-        } else {
-            //todo: add a Logger and make this shit shut up ;-)
-            System.out.println("Provider already registered..!");
         }
+        if (cipher == null) throw new IllegalStateException("Should not happen. Cipher has not been initialised.");
     }
 
     public static void setHashType(HashType alg) {

@@ -1,14 +1,12 @@
 package com.vegaasen.playhouse.utils;
 
 import com.vegaasen.playhouse.types.HashType;
+import com.vegaasen.playhouse.utils.abs.AbstractTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.*;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author <a href="mailto:vegaasen@gmail.com">Vegard Aasen</a>
  */
-public class HMacUtilsTest {
+public class HMacUtilsTest extends AbstractTest{
 
     private static final String MESSAGE = "VegardOnTheRocks j jsdjdas jiaj ijijsda ijij ";
     private static final String DIGESTED_VALUE = "zCjXj/dv/RFaYuVeb7T8+rYhtB1qRbj55JIG6IGfhhloL6oLUZe4v3QxkEB+k3fOAay4HGkbcEhiWztCdnE3dlI=";
@@ -30,8 +28,12 @@ public class HMacUtilsTest {
     public void setUp() {
         HMacUtils.setHashType(HMacUtils.DEFAULT_HASH_TYPE);
         KeyStoreUtils.setKeystoreType("JCEKS");
-        validVerificationKey = getAESKeyFromLocalKeyStore("my-secret", "vegard");
-        invalidVerificationKey = getAESKeyFromLocalKeyStore("my-second-secret", "vegard");
+        try {
+            validVerificationKey = getAESKeyFromLocalKeyStore("my-secret", "vegard");
+            invalidVerificationKey = getAESKeyFromLocalKeyStore("my-second-secret", "vegard");
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -220,9 +222,16 @@ public class HMacUtilsTest {
         assertEquals(expectedBase64Hmac, result);
     }
 
-    private static Key getAESKeyFromLocalKeyStore(String alias, String password) {
-        final KeyStore keyStore = KeyStoreUtils.load("fun.jceks", "vegard");
-        return KeyStoreUtils.getKey(keyStore, alias, password);
+    @Test
+    public void shouldGenerateHashedDataBasedOnAESKeyInHMac() throws Exception {
+        final String DATA_TO_SIGN = "ID020197CBE2E1651DDDD773FFAF37F60B23DB0FF";
+        final Key hmacKey = HMacUtils.getHMacKey(validVerificationKey, HashType.AES);
+        assertNotNull(hmacKey);
+        assertNotNull(hmacKey.getEncoded());
+        assertTrue(hmacKey.getEncoded().length > 0);
+        final Map<String, String> mapResult = HMacUtils.generateIntegrityContainer(hmacKey, DATA_TO_SIGN);
+        assertNotNull(mapResult);
+        assertTrue(mapResult.size() == 3);
     }
 
     @After

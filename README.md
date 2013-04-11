@@ -37,6 +37,10 @@ When listing the contents of the keystore, it would result in similar to this:
 
 Password for both the AES-generated key and the keystore: vegard
 
+# Performance testing for AES/Certificates
+
+    Run with: java -cp PKI-1.0-jar-with-dependencies.jar com.vegaasen.playhouse.run.StartPerformance <numOfIteration> "<documentToSign>" "#<elementId>"
+
 # Acknowledgements
 
 ..none :-P Just myself..
