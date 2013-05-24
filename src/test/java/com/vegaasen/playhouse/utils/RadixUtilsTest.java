@@ -45,10 +45,11 @@ public class RadixUtilsTest {
     @Test
     public void shouldConvertBackFromHexString() {
         final String expectedHexMessage = MESSAGE;
-        final String result = RadixUtils.convertFromHex(MESSAGE_HEX);
+        final byte[] result = RadixUtils.convertFromHex(MESSAGE_HEX);
         assertNotNull(result);
-        assertTrue(!result.isEmpty());
-        assertEquals(result, expectedHexMessage);
+        assertTrue(result.length>0);
+        String resultAsString = new String(result);
+        assertEquals(resultAsString, expectedHexMessage);
     }
 
     @After

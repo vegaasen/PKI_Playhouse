@@ -18,13 +18,17 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Simple class that is doing the same thing as
  *
  * @author <a href="vegard.aasen@telenor.com">Vegard Aasen</a>
  * @link com.vegaasen.playhouse.utils.PerformanceSigningTest
- * is doing.. OMG stupid me, copying everything from that test-class. Yeah, I know - but it was needed for a test-case..
+ * <p/>
+ * is doing.. OMG stupid me, copying everything from that test-class. Yeah, I know - but it is / was needed
+ * for a Test-case!
  */
 public final class StartPerformance {
 
@@ -32,6 +36,7 @@ public final class StartPerformance {
     private static final List<Result> results;
 
     private static int numOfIterations;
+    private static int numOfThreads = 1;
     private static String reference_id;
     private static Document document;
     private static Key preloadedHMacKey;
@@ -39,6 +44,7 @@ public final class StartPerformance {
     private static PrivateKey preloadedPrivateKey;
     private static X509Certificate preloadedClientCertificate;
     private static String documentLocation = "";
+    private static ExecutorService executorService;
 
     static {
         try {
@@ -60,24 +66,32 @@ public final class StartPerformance {
             System.exit(-1);
         }
         results = new ArrayList<>();
+        executorService = Executors.newCachedThreadPool();
     }
 
     public static void main(String... args) {
         if (args == null || args.length == 0) {
-            System.out.println("ERROR: Usage; com.vegaasen.playhouse.run.StartPerformance <numOfIterations> (opt)\"<filePath\" (opt)\"#<elementId>\"");
-            System.out.println("INFO: Example; com.vegaasen.playhouse.run.StartPerformance 100 \"C:\\_dev\\workspace_github\\PKI_Playhouse\\src\\test\\resources\\signing-document.xml\" \"#allTheCarsInTheWorld\"");
+            System.out.println("ERROR: Usage; com.vegaasen.playhouse.run.StartPerformance <numOfIterations> (opt)<numOfThreads> (opt)<\"filePath\"> (opt)#<\"elementId\">");
+            System.out.println("INFO: Example; com.vegaasen.playhouse.run.StartPerformance 100 1 \"C:\\_dev\\workspace_github\\PKI_Playhouse\\src\\test\\resources\\signing-document.xml\" \"#allTheCarsInTheWorld\"");
+            System.out.println("INFO: The default document for testing weights in at 2.259 bytes.");
             System.exit(-1);
         }
-        System.out.println("INFO: Can be runned with; -Xms256m -Xmx256m -server -XX:+CMSIncrementalMode -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:MaxPermSize=128m");
+        System.out.println("INFO: Why not run it with; -Xms256m -Xmx256m -server -XX:+CMSIncrementalMode -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:MaxPermSize=128m");
         numOfIterations = Integer.parseInt(args[0]);
         if (args.length > 1) {
-            documentLocation = args[1];
+            numOfThreads = Integer.parseInt(args[1]);
             if (args.length > 2) {
-                reference_id = args[2];
+                documentLocation = args[2];
+                if (args.length > 3) {
+                    reference_id = args[3];
+                }
             }
         }
+
         configure();
+
         runAllTests();
+
         System.exit(1);
     }
 
@@ -115,7 +129,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -139,7 +153,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -163,7 +177,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -187,7 +201,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -220,7 +234,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } finally {
@@ -253,7 +267,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -288,7 +302,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } finally {
@@ -321,7 +335,7 @@ public final class StartPerformance {
             thread.run();
             long stop = System.nanoTime();
             long resultInNanos = stop - start;
-            outputResult(now, resultInNanos);
+            storeResult(now, resultInNanos);
         } finally {
             resetDocument();
         }
@@ -412,6 +426,19 @@ public final class StartPerformance {
         return null;
     }
 
+    /**
+     * Not working as of now.
+     * 
+     * @param thread thread to execute
+     */
+    private static void executeThread(final Thread thread) {
+        if(thread!=null) {
+            for(int i=0;i<numOfThreads;i++) {
+                executorService.execute(thread);
+            }
+        }
+    }
+
     private static void warmUpJVM() {
         @SuppressWarnings("unused") double sum = 0;
         for (int i = 0; i < 1000; i++) {
@@ -421,7 +448,7 @@ public final class StartPerformance {
         }
     }
 
-    private static void outputResult(final Date initiated, final long nanoResult) {
+    private static void storeResult(final Date initiated, final long nanoResult) {
         String methodCallingMe = "";
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         if (stackTrace != null && stackTrace.length >= 2) {
@@ -438,6 +465,7 @@ public final class StartPerformance {
                         documentLocation)
                 .finished(new Date())
                 .numOfIterations(numOfIterations)
+                .numOfThreads(numOfThreads)
                 .initiated(initiated)
                 .build()
         );

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Result {
 
-    private static final String tabulator = "\t", newLine = "\n";
+    private static final String separator = ",", newLine = "\n";
 
     private static final String EMPTY = "";
     private Date initiated;
@@ -18,9 +18,7 @@ public final class Result {
     private String documentUsed;
     private String callingMethod;
     private int numOfIterations;
-
-    private Result() {
-    }
+    private int numOfThreads;
 
     private Result(Builder builder) {
         this.initiated = builder.initiated;
@@ -29,6 +27,7 @@ public final class Result {
         this.documentUsed = builder.documentUsed;
         this.callingMethod = builder.callingMethod;
         this.numOfIterations = builder.numOfIterations;
+        this.numOfThreads = builder.numOfThreads;
     }
 
     public Date getInitiated() {
@@ -55,26 +54,32 @@ public final class Result {
         return numOfIterations;
     }
 
+    public int getNumOfThreads() {
+        return numOfThreads;
+    }
+
     public static String generateResultSetString(Result r, int num) {
         if (r != null) {
             StringBuilder builder = new StringBuilder();
-            builder.append(String.format("%s)%s", num, tabulator));
+            builder.append(String.format("%s)%s", num, separator));
             builder.append(r.getInitiated());
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append(r.getFinished());
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append(r.getNumOfIterations());
-            builder.append(tabulator);
+            builder.append(separator);
+            builder.append(r.getNumOfThreads());
+            builder.append(separator);
             builder.append(String.format("%sns%s%sms%s%ss",
                     r.getNanoResult(),
-                    tabulator,
+                    separator,
                     (double) TimeUnit.NANOSECONDS.toMillis(r.getNanoResult()),
-                    tabulator,
+                    separator,
                     (double) TimeUnit.NANOSECONDS.toSeconds(r.getNanoResult())
             ));
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append(r.getCallingMethod());
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append(r.getDocumentUsed());
             builder.append(newLine);
             return builder.toString();
@@ -88,21 +93,23 @@ public final class Result {
             builder.append("");
             int num = 1;
             builder.append("#");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Initiated");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Finished");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("# of Iterations");
-            builder.append(tabulator);
+            builder.append(separator);
+            builder.append("# of Threads");
+            builder.append(separator);
             builder.append("Nanos");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Millis");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Secs");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Method");
-            builder.append(tabulator);
+            builder.append(separator);
             builder.append("Document location");
             builder.append(newLine);
             for (Result r : results) {
@@ -121,6 +128,7 @@ public final class Result {
         private String documentUsed = "";
         private String callingMethod = "";
         private int numOfIterations = 0;
+        private int numOfThreads = 1;
 
         public Builder() {
 
@@ -153,6 +161,11 @@ public final class Result {
 
         public Builder numOfIterations(int i) {
             numOfIterations = i;
+            return this;
+        }
+
+        public Builder numOfThreads(int i) {
+            numOfThreads = i;
             return this;
         }
 

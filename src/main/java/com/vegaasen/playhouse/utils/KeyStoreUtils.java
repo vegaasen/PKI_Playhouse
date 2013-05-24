@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import sun.security.x509.*;
 
+import javax.crypto.SecretKey;
+import javax.security.auth.DestroyFailedException;
 import java.math.BigInteger;
 import java.io.*;
 import java.security.*;
@@ -23,8 +25,11 @@ public final class KeyStoreUtils {
             KEY_PUBLIC = "KEY_PUBLIC";
     public static final String DEFAULT_KEYSTORE_PASSWORD;
     public static final File DEFAULT_KEYSTORE_FILE;
+    public static final String
+            KEY_STORE_TYPE_JCEKS = "JCEKS",
+            KEY_STORE_TYPE_JKS = "JKS";
 
-    public static String keystoreType = "JKS"; //default
+    private static String keystoreType = KEY_STORE_TYPE_JKS; //default
 
     static {
         DEFAULT_KEYSTORE_FILE = FileUtils.getInstance().getFileFromClassPath(
@@ -125,6 +130,44 @@ public final class KeyStoreUtils {
         return load((InputStream) null, storePassword);
     }
 
+    public static KeyStore createEmpty()
+            throws IOException, NoSuchAlgorithmException, KeyStoreException, CertificateException {
+        return createEmpty("");
+    }
+
+    public static boolean saveKeyStore(final KeyStore keyStore, final String location) throws IOException {
+        return saveKeyStore(keyStore, "", location);
+    }
+
+    public static boolean saveKeyStore(final KeyStore keyStore, final String password, final String location)
+            throws IOException {
+        if (keyStore != null) {
+            File file = new File(location);
+            if (file.exists()) {
+                int counter = 1;
+                for (; ; ) {
+                    file = new File(String.format("%s_%s", location, counter));
+                    if (!file.exists()) {
+                        break;
+                    }
+                    counter++;
+                }
+            }
+            try {
+                final FileOutputStream fileOutputStream = new FileOutputStream(file);
+                try {
+                    keyStore.store(fileOutputStream, password.toCharArray());
+                    return file.exists();
+                } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {
+                    throw new IOException("Unable to store the keyStore. Error was:\n" + e);
+                }
+            } catch (FileNotFoundException e) {
+                throw new IOException("Unable to create keystore on location. Not found." + e);
+            }
+        }
+        throw new IllegalArgumentException("Missing arguments.");
+    }
+
     public static List<X509Certificate[]> getCertificateChains(KeyStore keystore) throws KeyStoreException {
         List<X509Certificate[]> chains = Lists.newArrayList();
 
@@ -164,6 +207,34 @@ public final class KeyStoreUtils {
                         alias
                 )
         );
+    }
+
+    public static void addKey(final KeyStore keyStore, final SecretKey key, String alias)
+            throws KeyException, KeyStoreException {
+        addKey(keyStore, key, alias, null);
+    }
+
+    public static void addKey(final KeyStore keyStore, final SecretKey secretKey, String alias, String password)
+            throws KeyException, KeyStoreException {
+        if (keyStore != null && secretKey != null) {
+            if(keyStore.containsAlias(alias)) {
+                throw new KeyException(String.format("Unable to add alias {%s}. Alias already exists", alias));
+            }
+            KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(secretKey);
+            if (password == null) {
+                password = "";
+            }
+            KeyStore.PasswordProtection passwordProtection =
+                    new KeyStore.PasswordProtection(password.toCharArray());
+            keyStore.setEntry(alias, entry, passwordProtection);
+            try {
+                passwordProtection.destroy();
+            } catch (DestroyFailedException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        throw new KeyException("Unable to create SecretKeyEntry from the secretKey.");
     }
 
     public static Key getKey(final KeyStore keyStore, final String alias, final String password) throws KeyStoreException {

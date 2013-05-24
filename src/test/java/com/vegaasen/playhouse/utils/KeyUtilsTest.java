@@ -3,6 +3,7 @@ package com.vegaasen.playhouse.utils;
 import com.vegaasen.playhouse.types.HashType;
 import org.junit.Test;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -58,6 +59,28 @@ public class KeyUtilsTest {
         final String kaput = "æøå";
         final Key aesKey = KeyUtils.convertFromPortableToKey(kaput, HashType.AES);
         assertNotNull(aesKey);
+    }
+
+    @Test
+    public void shouldConvertToSecretKey() throws Exception {
+        final String portableFormatRepresentation = "ea2d84110583e3a80070ea76446425d6";
+        final SecretKey key = KeyUtils.convertFromPortableToSecretKey(portableFormatRepresentation, HashType.AES);
+        assertNotNull(key);
+        assertTrue(key.toString().length()>0);
+        final String andBackToPortable = KeyUtils.convertKeyToPortableFormat(key);
+        assertNotNull(andBackToPortable);
+        assertEquals(portableFormatRepresentation, andBackToPortable);
+    }
+
+    @Test
+    public void shouldConvertToSecretKeyFromHex() throws Exception {
+        final String portableFormatRepresentation = "ea2d84110583e3a80070ea76446425d6";
+        final SecretKey key = KeyUtils.convertFromPortableHexToSecretKey(portableFormatRepresentation, HashType.AES);
+        assertNotNull(key);
+        assertTrue(key.toString().length()>0);
+        final String andBackToPortable = KeyUtils.convertKeyToPortableFormatHex(key);
+        assertNotNull(andBackToPortable);
+        assertEquals(portableFormatRepresentation, andBackToPortable);
     }
 
     @Test
