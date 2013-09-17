@@ -15,6 +15,10 @@ My very own "PKI" Playhouse. Just a testing-ground for encipher-stuff, encoding,
 
 # Generate / Usage of the provided Keystore
 
+## Generate a keystore with the program
+
+com.vegaasen.playhouse.run.KeyStoreWithSymmetric ea2d841105bbcafa80070ea76446425A3 /tmp/something.jceks some-key password
+
 ## Generate an AES-Key
 
 This is how you would typically generate a AESKey with the default Keytool-command-line thingie provided by Sun/Oracle..

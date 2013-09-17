@@ -7,8 +7,8 @@ import sun.security.x509.*;
 
 import javax.crypto.SecretKey;
 import javax.security.auth.DestroyFailedException;
-import java.math.BigInteger;
 import java.io.*;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -217,7 +217,7 @@ public final class KeyStoreUtils {
     public static void addKey(final KeyStore keyStore, final SecretKey secretKey, String alias, String password)
             throws KeyException, KeyStoreException {
         if (keyStore != null && secretKey != null) {
-            if(keyStore.containsAlias(alias)) {
+            if (keyStore.containsAlias(alias)) {
                 throw new KeyException(String.format("Unable to add alias {%s}. Alias already exists", alias));
             }
             KeyStore.SecretKeyEntry entry = new KeyStore.SecretKeyEntry(secretKey);
