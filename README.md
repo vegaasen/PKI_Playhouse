@@ -12,12 +12,25 @@ My very own "PKI" Playhouse. Just a testing-ground for encipher-stuff, encoding,
 * Keys in Keystores
 * Different types of Keystores (JKS, JKCES, p12 etc..)
 * Radix-stuff
+* Import certificates based on a hostname to an existing or new keystore.
+
+# Import certificates from hostname
+
+You can download and store x509 certificates in a keystore based on a hostname, quite simple.
+
+    com.vegaasen.playhouse.run.ImportCertificate <hostname> <password> <outputKeyStore> <existingKeyStore>
+    #example
+    com.vegaasen.playhouse.run.ImportCertificate www.telenor.no telenor /tmp/keystore.out
+
+Then use the keytool to look into a keystore. Example:
+
+    keytool -list -v -keystore keystore.out
 
 # Generate / Usage of the provided Keystore
 
 ## Generate a keystore with the program
 
-com.vegaasen.playhouse.run.KeyStoreWithSymmetric ea2d841105bbcafa80070ea76446425A3 /tmp/something.jceks some-key password
+    com.vegaasen.playhouse.run.KeyStoreWithSymmetric ea2d841105bbcafa80070ea76446425A3 /tmp/something.jceks some-key password
 
 ## Generate an AES-Key
 
