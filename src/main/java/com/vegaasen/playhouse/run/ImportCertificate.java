@@ -38,7 +38,7 @@ public final class ImportCertificate {
     }
 
     private static void showUsage() {
-        System.err.println("Wrong usage.\nUsage: <hostname> <password> <outputKeyStore> <existingKeyStore>");
+        System.err.println("Wrong usage.\nUsage: <hostname> <password> <outputKeyStore> <existingKeyStore(will append to existing keystore)>");
     }
 
 }

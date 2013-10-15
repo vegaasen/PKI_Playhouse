@@ -18,7 +18,7 @@ My very own "PKI" Playhouse. Just a testing-ground for encipher-stuff, encoding,
 
 You can download and store x509 certificates in a keystore based on a hostname, quite simple.
 
-    com.vegaasen.playhouse.run.ImportCertificate <hostname> <password> <outputKeyStore> <existingKeyStore>
+    com.vegaasen.playhouse.run.ImportCertificate <hostname> <password> <outputKeyStore> <existingKeyStore(will append to existing keystore)>
     #example
     com.vegaasen.playhouse.run.ImportCertificate www.telenor.no telenor /tmp/keystore.out
 
