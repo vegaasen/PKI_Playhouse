@@ -60,4 +60,6 @@ Password for both the AES-generated key and the keystore: vegard
 
 # Acknowledgements
 
-- Vegard Aasen || vegaasen at gmail dot com || www.vegaasen.com
+- Vegard Aasen
+- vegaasen at gmail dot com
+- www.vegaasen.com
