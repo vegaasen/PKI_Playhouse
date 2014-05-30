@@ -70,7 +70,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.vegaasen.playhouse.run.StartPerformance</mainClass>
+                            <mainClass>com.vegaasen.playhouse.run.performance.StartPerformance</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

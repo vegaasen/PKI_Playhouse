@@ -19,7 +19,7 @@ import java.security.cert.CertificateException;
  *
  * @author <a href="vegard.aasen@telenor.com">Vegard Aasen</a>
  */
-public class KeyStoreWithSymmetric {
+public final class KeyStoreWithSymmetric {
 
     private static final int
             ARG_KEY = 0,

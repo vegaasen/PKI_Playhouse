@@ -1,4 +1,4 @@
-package com.vegaasen.playhouse.run;
+package com.vegaasen.playhouse.run.performance;
 
 import com.google.common.base.Strings;
 import com.vegaasen.playhouse.model.Result;
@@ -74,8 +74,8 @@ public final class StartPerformance {
 
     public static void main(String... args) {
         if (args == null || args.length == 0) {
-            System.out.println("ERROR: Usage; com.vegaasen.playhouse.run.StartPerformance <numOfIterations> (opt)<numOfThreads> (opt)<\"filePath\"> (opt)#<\"elementId\">");
-            System.out.println("INFO: Example; com.vegaasen.playhouse.run.StartPerformance 100 1 \"C:\\_dev\\workspace_github\\PKI_Playhouse\\src\\test\\resources\\signing-document.xml\" \"#allTheCarsInTheWorld\"");
+            System.out.println("ERROR: Usage; com.vegaasen.playhouse.run.performance.StartPerformance <numOfIterations> (opt)<numOfThreads> (opt)<\"filePath\"> (opt)#<\"elementId\">");
+            System.out.println("INFO: Example; com.vegaasen.playhouse.run.performance.StartPerformance 100 1 \"C:\\_dev\\workspace_github\\PKI_Playhouse\\src\\test\\resources\\signing-document.xml\" \"#allTheCarsInTheWorld\"");
             System.out.println("INFO: The default document for testing weights in at 2.259 bytes.");
             System.exit(-1);
         }
