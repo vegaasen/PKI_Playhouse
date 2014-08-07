@@ -16,9 +16,9 @@ public class FileUtilsTest {
     @Test
     public void shouldFindHostFile() {
         File hostFile;
-        if(isWindows()) {
+        if (isWindows()) {
             hostFile = FileUtils.getInstance().getFileFromFileSystem("C:\\Windows\\System32\\drivers\\etc\\hosts");
-        }else{
+        } else {
             hostFile = FileUtils.getInstance().getFileFromFileSystem("/etc/hosts");
         }
         assertNotNull(hostFile);

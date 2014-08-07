@@ -3,29 +3,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.vegaasen.playhouse</groupId>
-    <artifactId>PKI</artifactId>
+    <artifactId>pki-utils</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>PKI</name>
+    <name>PKI-Utilities</name>
+    <description>
+        Small project that contains a lot of different tests and utilities related to PKI-stuff
+    </description>
     <url>http://www.vegaasen.com</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdk.version>1.7</jdk.version>
-    </properties>
-
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>14.0.1</version>
         </dependency>
     </dependencies>
 
@@ -77,5 +75,10 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk.version>1.7</jdk.version>
+    </properties>
 
 </project>

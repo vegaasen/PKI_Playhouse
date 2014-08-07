@@ -6,9 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
 import java.io.File;
 import java.io.IOException;
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.Key;
+import java.security.KeyStoreException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
@@ -24,7 +29,6 @@ public class XmlSigningUtilsTest extends AbstractTest {
     private static Key someKey;
     private static Key someOtherKey;
 
-    private File documentAsFile;
     private Document document;
 
     @Before
@@ -37,7 +41,7 @@ public class XmlSigningUtilsTest extends AbstractTest {
         } catch (KeyStoreException e) {
             e.printStackTrace();
         }
-        documentAsFile = FileUtils.getInstance().getFileFromClassPath("signing-document.xml");
+        final File documentAsFile = FileUtils.getInstance().getFileFromClassPath("signing-document.xml");
         assertNotNull(documentAsFile);
         assertTrue(documentAsFile.exists());
         document = getDocumentFromFile(documentAsFile);
