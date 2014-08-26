@@ -4,10 +4,22 @@ import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 import com.vegaasen.playhouse.types.HashType;
 
-import javax.crypto.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,11 +48,11 @@ public final class HMacUtils {
     /**
      * This will generate a Map (hence the Container-name) that contains three elements.
      * These are:
-     *  -digested value
-     *  -signature value
-     *  -hashType used (e.g sha-1)
+     * -digested value
+     * -signature value
+     * -hashType used (e.g sha-1)
      *
-     * @param aesKey They key to sign with
+     * @param aesKey  They key to sign with
      * @param message The message to generate hmac for
      * @return container with lots of stuff
      */
@@ -64,7 +76,7 @@ public final class HMacUtils {
                         encryptedCipherValue,
                         encryptedCipherValueLength
                 );
-                if (storedBytesInOutput > 0 && hMac != null) {
+                if (storedBytesInOutput > 0) {
                     Map<String, String> converted = new LinkedHashMap<>();
                     converted.put(KEY_SIGNATURE_VALUE, BaseEncoding.base64().encode(hMac.doFinal()));
                     converted.put(KEY_DIGEST_VALUE, BaseEncoding.base64().encode(encryptedCipherValue));
@@ -131,7 +143,7 @@ public final class HMacUtils {
                 hMac.update(message.getBytes());
                 byte[] messageHash = new byte[hMac.getMacLength()];
                 System.arraycopy(plainText, messageLength, messageHash, 0, messageHash.length);
-                if (messageHash != null && messageHash.length > 0) {
+                if (messageHash.length > 0) {
                     final byte[] signValue = BaseEncoding.base64().decode(signatureValue);
                     return MessageDigest.isEqual(
                             messageHash, hMac.doFinal()) &&
@@ -173,12 +185,12 @@ public final class HMacUtils {
     /**
      * Returns a HMac-key based on some existing key (may it be AES, Triple-DES or similar)
      *
-     * @param key the key
+     * @param key      the key
      * @param hashType HashType
      * @return HMac-Key
      */
     public static Key getHMacKey(final Key key, final HashType hashType) {
-        if(key!=null) {
+        if (key != null) {
             return getHMacKey(key.getEncoded(), hashType);
         }
         throw new IllegalArgumentException("Argument cannot be null or empty.");
@@ -187,12 +199,12 @@ public final class HMacUtils {
     /**
      * Returns a HMac-key based on some existing keyData (may it be AES, Triple-DES or similar)
      *
-     * @param keyData byte stream containing the key
+     * @param keyData  byte stream containing the key
      * @param hashType HashType
      * @return HMac-Key
      */
     public static Key getHMacKey(final byte[] keyData, final HashType hashType) {
-        if(keyData!=null && keyData.length>0) {
+        if (keyData != null && keyData.length > 0) {
             return new SecretKeySpec(keyData, hashType.getType());
         }
         throw new IllegalArgumentException("Argument cannot be null or empty.");
@@ -223,7 +235,7 @@ public final class HMacUtils {
     }
 
     private static void configureSecurity() {
-        if(cipher==null) {
+        if (cipher == null) {
             try {
                 //AES/CTS/PKCS5Padding?
                 cipher = Cipher.getInstance("AES/CTR/NoPadding", SUN_JCE_PROVIDER_ABBR);

@@ -5,6 +5,9 @@ package com.vegaasen.playhouse.types;
  */
 public enum HashType {
 
+    SHA_256("SHA-256", "", 256),
+    SHA_384("SHA-384", "", 384),
+    SHA_512("SHA-512", "", 512),
     HMAC_SHA_1("HmacSHA1", "http://www.w3.org/2000/09/xmldsig#hmac-sha1", 160),
     HMAC_SHA_256("HmacSHA256", "http://www.w3.org/2001/04/xmldsig-more#hmac-sha256", 256),
     HMAC_SHA_384("HmacSHA384", "http://www.w3.org/2001/04/xmldsig-more#hmac-sha384", 384),
