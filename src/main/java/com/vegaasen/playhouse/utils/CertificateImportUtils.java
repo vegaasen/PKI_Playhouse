@@ -20,7 +20,6 @@ public final class CertificateImportUtils {
     public static final String DEFAULT_FILE_NAME = "cacerts.jks";
 
     private static final Logger LOG = Logger.getLogger(CertificateImportUtils.class.getName());
-
     private static final String DEFAULT_FILE_TMP_NAME = "cacerts.tmp.jks";
     private static final String DEFAULT_FILE_FOLDER = System.getProperty("java.io.tmpdir");
     private static final String PORT_IDENTIFIER = ":";

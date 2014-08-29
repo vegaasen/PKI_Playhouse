@@ -2,7 +2,6 @@ package com.vegaasen.playhouse.utils;
 
 import org.junit.Test;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
@@ -19,18 +18,20 @@ import static org.junit.Assert.assertTrue;
  */
 public class KeyStoreUtilsTest {
 
+    private static final String STORE_PASSWORD = "telenor";
+
     @Test
     public void testLoadKeyFromKeyStore() throws IOException, NoSuchAlgorithmException, KeyStoreException, CertificateException {
-        InputStream is = KeyStoreUtilsTest.class.getResourceAsStream("/telenor-systest-symkey.jceks");
+        InputStream is = KeyStoreUtilsTest.class.getResourceAsStream("/test-symkey.jceks");
         assertNotNull(is);
         KeyStoreUtils.setKeystoreType(KeyStoreUtils.KEY_STORE_TYPE_JCEKS);
-        KeyStore ks = KeyStoreUtils.load(is, "telenor");
+        KeyStore ks = KeyStoreUtils.load(is, STORE_PASSWORD);
         assertNotNull(ks);
-        assertTrue(ks.size()>0);
+        assertTrue(ks.size() > 0);
         assertTrue(ks.containsAlias("saml_symmetric_key"));
-        Key key = KeyStoreUtils.getKey(ks, "saml_symmetric_key", "telenor");
+        Key key = KeyStoreUtils.getKey(ks, "saml_symmetric_key", STORE_PASSWORD);
         assertNotNull(key);
-        assertTrue(key.getEncoded().length>0);
+        assertTrue(key.getEncoded().length > 0);
     }
-    
+
 }

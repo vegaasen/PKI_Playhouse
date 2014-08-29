@@ -1,13 +1,14 @@
 package com.vegaasen.playhouse.utils;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.security.KeyStore;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:vegard.aasen@telenor.com">Vegard Aasen</a>
@@ -15,15 +16,11 @@ import static org.junit.Assert.*;
  */
 public final class CertificateImportUtilsTest {
 
-    private static final String EMPTY = "";
+    private static final String DEFAULT_PASSWORD = "telenor";
+    private static final String WWW_TELENOR_NO = "www.telenor.no";
+    private static final String WWW_TELENORFUSION_NO = "www.telenorfusion.no";
 
-    private String defaultPassword = "telenor";
     private File writtenToFile;
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
 
     @Test
     public void shouldGetDefaultPathForCaCerts() {
@@ -36,10 +33,10 @@ public final class CertificateImportUtilsTest {
     @Test
     public void shouldGetCertificateFromHostName_telenor_no() throws Exception {
         String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
-                "www.telenor.no",
+                WWW_TELENOR_NO,
                 "",
                 null,
-                defaultPassword
+                DEFAULT_PASSWORD
         );
         assertNotNull(writtenToLocation);
         assertFalse(writtenToLocation.isEmpty());
@@ -49,17 +46,17 @@ public final class CertificateImportUtilsTest {
         assertNotNull(writtenToLocation);
         assertTrue(writtenToFile.exists());
         assertTrue(writtenToFile.isFile());
-        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, defaultPassword);
+        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, DEFAULT_PASSWORD);
         assertNotNull(keyStore);
     }
 
     @Test
     public void shouldGetCertificateFromHostNameParamsNull_telenor_no() throws Exception {
         String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
-                "www.telenor.no",
+                WWW_TELENOR_NO,
                 null,
                 null,
-                defaultPassword
+                DEFAULT_PASSWORD
         );
         assertNotNull(writtenToLocation);
         assertFalse(writtenToLocation.isEmpty());
@@ -69,17 +66,17 @@ public final class CertificateImportUtilsTest {
         assertNotNull(writtenToLocation);
         assertTrue(writtenToFile.exists());
         assertTrue(writtenToFile.isFile());
-        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, defaultPassword);
+        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, DEFAULT_PASSWORD);
         assertNotNull(keyStore);
     }
 
     @Test
     public void shouldGetCertificateFromHostNameParamsNull_telenorfusion_no() throws Exception {
         String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
-                "www.telenorfusion.no",
+                WWW_TELENORFUSION_NO,
                 null,
                 null,
-                defaultPassword
+                DEFAULT_PASSWORD
         );
         assertNotNull(writtenToLocation);
         assertFalse(writtenToLocation.isEmpty());
@@ -89,14 +86,14 @@ public final class CertificateImportUtilsTest {
         assertNotNull(writtenToLocation);
         assertTrue(writtenToFile.exists());
         assertTrue(writtenToFile.isFile());
-        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, defaultPassword);
+        KeyStore keyStore = KeyStoreUtils.load(writtenToFile, DEFAULT_PASSWORD);
         assertNotNull(keyStore);
     }
 
     @Test
     public void shouldGetCertificateFromHostNameParamsNull_no_password_telenor_no() throws Exception {
         String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
-                "www.telenorfusion.no",
+                WWW_TELENORFUSION_NO,
                 null,
                 null,
                 null
