@@ -17,7 +17,10 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -428,12 +431,13 @@ public final class StartPerformance {
 
     /**
      * Not working as of now.
-     * 
+     *
      * @param thread thread to execute
      */
+    @SuppressWarnings("unused")
     private static void executeThread(final Thread thread) {
-        if(thread!=null) {
-            for(int i=0;i<numOfThreads;i++) {
+        if (thread != null) {
+            for (int i = 0; i < numOfThreads; i++) {
                 executorService.execute(thread);
             }
         }
@@ -505,11 +509,11 @@ public final class StartPerformance {
 
     private static Document getDocumentFromInputStream(final InputStream is) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Unable to parse", e);
         }
         try {
             return builder.parse(is);
