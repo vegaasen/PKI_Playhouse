@@ -31,6 +31,18 @@ public final class CertificateImportUtilsTest {
     }
 
     @Test
+    public void shouldGetCertificateFromHostName_source_telenor_no() throws Exception {
+        String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
+                "source.telenor.no",
+                "/usr/jdk/current_1.7/jre/lib/security/cacerts",
+                "/tmp/updated-cacerts",
+                "changeit"
+        );
+        assertNotNull(writtenToLocation);
+        assertFalse(writtenToLocation.isEmpty());
+    }
+
+    @Test
     public void shouldGetCertificateFromHostName_telenor_no() throws Exception {
         String writtenToLocation = CertificateImportUtils.downloadAndImportCertificates(
                 WWW_TELENOR_NO,
